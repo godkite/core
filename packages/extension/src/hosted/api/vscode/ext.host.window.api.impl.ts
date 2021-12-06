@@ -200,6 +200,9 @@ export function createWindowApiFactory(
     registerTerminalLinkProvider(handler: vscode.TerminalLinkProvider): vscode.Disposable {
       return extHostTerminal.registerLinkProvider(handler);
     },
+    registerTerminalProfileProvider(id: string, provider: vscode.TerminalProfileProvider): vscode.Disposable {
+      return extHostTerminal.registerTerminalProfileProvider(extension, id, provider);
+    },
     registerWebviewViewProvider(viewId: string, provider: WebviewViewProvider, options?: { webviewOptions: { retainContextWhenHidden: boolean } }) {
       return extHostWebviewView.registerWebviewViewProvider(extension, viewId, provider, options?.webviewOptions);
     },

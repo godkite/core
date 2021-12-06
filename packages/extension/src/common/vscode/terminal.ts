@@ -2,6 +2,7 @@ import { Event, IDisposable, IExtensionProps } from '@opensumi/ide-core-common';
 import { ITerminalInfo, ITerminalDimensionsDto, ITerminalLaunchError, ITerminalDimensions, ITerminalExitEvent, ITerminalLinkDto } from '@opensumi/ide-terminal-next';
 import { SerializableEnvironmentVariableCollection } from '@opensumi/ide-terminal-next/lib/common/environmentVariable';
 import type vscode from 'vscode';
+import { IExtensionDescription } from './extension';
 
 export interface IMainThreadTerminal {
   $sendText(id: string, text: string, addNewLine?: boolean);
@@ -18,6 +19,9 @@ export interface IMainThreadTerminal {
 
   $startLinkProvider(): void;
   $stopLinkProvider(): void;
+
+  $registerProfileProvider(id: string, extensionIdentifier: string): void;
+  $unregisterProfileProvider(id: string): void;
 
   // Process
   $sendProcessTitle(terminalId: string, title: string): void;
@@ -70,6 +74,10 @@ export interface IExtHostTerminal {
   registerLinkProvider(provider: vscode.TerminalLinkProvider): IDisposable;
   $provideLinks(terminalId: string, line: string): Promise<ITerminalLinkDto[]>;
   $activateLink(terminalId: string, linkId: number): void;
+
+  registerTerminalProfileProvider(extension: IExtensionDescription, id: string, provider: vscode.TerminalProfileProvider): IDisposable;
+  // $acceptDefaultProfile(profile: ITerminalProfile, automationProfile: ITerminalProfile): void;
+  // $createContributedProfileTerminal(id: string, options: ICreateContributedTerminalProfileOptions): Promise<void>;
 
   //#region
   getEnviromentVariableCollection(extension: IExtensionProps): vscode.EnvironmentVariableCollection;

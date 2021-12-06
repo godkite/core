@@ -291,23 +291,23 @@ declare module 'vscode' {
     isExtensionTerminal?: boolean;
 
     /**
-		 * A message to write to the terminal on first launch, note that this is not sent to the
-		 * process but, rather written directly to the terminal. This supports escape sequences such
-		 * a setting text style.
-		 */
-		message?: string;
+     * A message to write to the terminal on first launch, note that this is not sent to the
+     * process but, rather written directly to the terminal. This supports escape sequences such
+     * a setting text style.
+     */
+    message?: string;
 
-		/**
-		 * The icon path or {@link ThemeIcon} for the terminal.
-		 */
-		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
+    /**
+     * The icon path or {@link ThemeIcon} for the terminal.
+     */
+    iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
 
-		/**
-		 * The icon {@link ThemeColor} for the terminal.
-		 * The `terminal.ansi*` theme keys are
-		 * recommended for the best contrast and consistency across themes.
-		 */
-		color?: ThemeColor;
+    /**
+     * The icon {@link ThemeColor} for the terminal.
+     * The `terminal.ansi*` theme keys are
+     * recommended for the best contrast and consistency across themes.
+     */
+    color?: ThemeColor;
   }
 
   /**
@@ -371,6 +371,34 @@ declare module 'vscode' {
   }
 
   /**
+   * Provides a terminal profile for the contributed terminal profile when launched via the UI or
+   * command.
+   */
+   export interface TerminalProfileProvider {
+    /**
+     * Provide the terminal profile.
+     * @param token A cancellation token that indicates the result is no longer needed.
+     * @returns The terminal profile.
+     */
+    provideTerminalProfile(token: CancellationToken): ProviderResult<TerminalProfile>;
+  }
+
+  /**
+   * A terminal profile defines how a terminal will be launched.
+   */
+  export class TerminalProfile {
+    /**
+     * The options that the terminal will launch with.
+     */
+    options: TerminalOptions | ExtensionTerminalOptions;
+    /**
+     * Creates a new terminal profile.
+     * @param options The options that the terminal will launch with.
+     */
+    constructor(options: TerminalOptions | ExtensionTerminalOptions);
+  }
+
+  /**
    * Class used to execute an extension callback as a task.
    */
   export class CustomExecution {
@@ -402,16 +430,16 @@ declare module 'vscode' {
     pty: Pseudoterminal;
 
     /**
-		 * The icon path or {@link ThemeIcon} for the terminal.
-		 */
-		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
+     * The icon path or {@link ThemeIcon} for the terminal.
+     */
+    iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
 
-		/**
-		 * The icon {@link ThemeColor} for the terminal.
-		 * The standard `terminal.ansi*` theme keys are
-		 * recommended for the best contrast and consistency across themes.
-		 */
-		color?: ThemeColor;
+    /**
+     * The icon {@link ThemeColor} for the terminal.
+     * The standard `terminal.ansi*` theme keys are
+     * recommended for the best contrast and consistency across themes.
+     */
+    color?: ThemeColor;
   }
 
   /**
@@ -501,22 +529,22 @@ declare module 'vscode' {
     onDidClose?: Event<void | number>;
 
     /**
-		 * An event that when fired allows changing the name of the terminal.
-		 *
-		 * **Example:** Change the terminal name to "My new terminal".
-		 * ```typescript
-		 * const writeEmitter = new vscode.EventEmitter<string>();
-		 * const changeNameEmitter = new vscode.EventEmitter<string>();
-		 * const pty: vscode.Pseudoterminal = {
-		 *   onDidWrite: writeEmitter.event,
-		 *   onDidChangeName: changeNameEmitter.event,
-		 *   open: () => changeNameEmitter.fire('My new terminal'),
-		 *   close: () => {}
-		 * };
-		 * vscode.window.createTerminal({ name: 'My terminal', pty });
-		 * ```
-		 */
-		onDidChangeName?: Event<string>;
+     * An event that when fired allows changing the name of the terminal.
+     *
+     * **Example:** Change the terminal name to "My new terminal".
+     * ```typescript
+     * const writeEmitter = new vscode.EventEmitter<string>();
+     * const changeNameEmitter = new vscode.EventEmitter<string>();
+     * const pty: vscode.Pseudoterminal = {
+     *   onDidWrite: writeEmitter.event,
+     *   onDidChangeName: changeNameEmitter.event,
+     *   open: () => changeNameEmitter.fire('My new terminal'),
+     *   close: () => {}
+     * };
+     * vscode.window.createTerminal({ name: 'My terminal', pty });
+     * ```
+     */
+    onDidChangeName?: Event<string>;
 
     /**
      * Implement to handle when the pty is open and ready to start firing events.
@@ -2203,7 +2231,7 @@ declare module 'vscode' {
 
     /** The text change is caused by an redo operation. */
     Redo = 2,
-	}
+  }
 
   /**
    * An event describing a transactional [document](#TextDocument) change.

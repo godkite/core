@@ -2,7 +2,7 @@ import type vscode from 'vscode';
 import { Event, Emitter, getDebugLogger, isUndefined, DisposableStore, IDisposable, Deferred, Disposable, CancellationTokenSource } from '@opensumi/ide-core-common';
 import { IRPCProtocol } from '@opensumi/ide-connection';
 import { ITerminalInfo, TerminalDataBufferer, ITerminalChildProcess, ITerminalDimensionsOverride, ITerminalDimensionsDto, ITerminalLaunchError, ITerminalExitEvent, ITerminalLinkDto } from '@opensumi/ide-terminal-next';
-import { IMainThreadTerminal, MainThreadAPIIdentifier, IExtHostTerminal } from '../../../common/vscode';
+import { IMainThreadTerminal, MainThreadAPIIdentifier, IExtHostTerminal, IExtensionDescription } from '../../../common/vscode';
 import { userInfo } from 'os';
 import { IExtension } from '../../../common';
 import { EnvironmentVariableMutatorType, ISerializableEnvironmentVariableCollection } from '@opensumi/ide-terminal-next/lib/common/environmentVariable';
@@ -26,6 +26,7 @@ export class ExtHostTerminal implements IExtHostTerminal {
   private readonly _linkProviders: Set<vscode.TerminalLinkProvider> = new Set();
   private readonly _terminalLinkCache: Map<string, Map<number, ICachedLinkEntry>> = new Map();
   private readonly _terminalLinkCancellationSource: Map<string, CancellationTokenSource> = new Map();
+  private readonly _profileProviders: Map<string, vscode.TerminalProfileProvider> = new Map();
 
   private environmentVariableCollections: Map<string, EnvironmentVariableCollection> = new Map();
 
@@ -254,6 +255,18 @@ export class ExtHostTerminal implements IExtHostTerminal {
     this.closeTerminalEvent.dispose();
     this.openTerminalEvent.dispose();
     this.disposables.dispose();
+  }
+
+  registerTerminalProfileProvider(extension: IExtensionDescription, id: string, provider: vscode.TerminalProfileProvider): IDisposable {
+    if (this._profileProviders.has(id)) {
+      throw new Error(`Terminal profile provider "${id}" already registered`);
+    }
+    this._profileProviders.set(id, provider);
+    this.proxy.$registerProfileProvider(id, extension.identifier.value);
+    return Disposable.create(() => {
+      this._profileProviders.delete(id);
+      this.proxy.$unregisterProfileProvider(id);
+    });
   }
 
   private async _getTerminalByIdEventually(id: string, timeout = 1000) {
