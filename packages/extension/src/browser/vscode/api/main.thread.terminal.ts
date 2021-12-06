@@ -6,6 +6,7 @@ import { ITerminalApiService, ITerminalGroupViewService, ITerminalController, IT
 import { IEnvironmentVariableService, SerializableEnvironmentVariableCollection, EnvironmentVariableServiceToken } from '@opensumi/ide-terminal-next/lib/common/environmentVariable';
 import { deserializeEnvironmentVariableCollection } from '@opensumi/ide-terminal-next/lib/common/environmentVariable';
 import { IMainThreadTerminal, IExtHostTerminal, ExtHostAPIIdentifier } from '../../../common/vscode';
+import { ITerminalProfileService } from '@opensumi/ide-terminal-next/lib/common/profile';
 
 @Injectable({ multiple: true })
 export class MainThreadTerminal implements IMainThreadTerminal {
@@ -29,6 +30,9 @@ export class MainThreadTerminal implements IMainThreadTerminal {
 
   @Autowired(ITerminalController)
   private controller: ITerminalController;
+
+  @Autowired(ITerminalProfileService)
+  private profileSerivce: ITerminalProfileService;
 
   @Autowired(ITerminalGroupViewService)
   private terminalGroupViewService: ITerminalGroupViewService;
@@ -62,6 +66,11 @@ export class MainThreadTerminal implements IMainThreadTerminal {
       this.proxy.$onDidOpenTerminal(info);
     }));
     this.disposable.addDispose(this.controller.onInstanceRequestStartExtensionTerminal((e) => this._onRequestStartExtensionTerminal(e)));
+    this.disposable.addDispose(
+      this.profileSerivce.onDidChangeAvailableProfiles(() => {
+        // this._updateDefaultProfile()
+      })
+    )
   }
 
   private initData() {
@@ -188,19 +197,25 @@ export class MainThreadTerminal implements IMainThreadTerminal {
   }
 
   public $registerProfileProvider(id: string, extensionIdentifier: string): void {
-    // TODO: 待实现
     // Proxy profile provider requests through the extension host
-    // this._profileProviders.set(id, this.controller.registerTerminalProfileProvider(extensionIdentifier, id, {
-    //   createContributedTerminalProfile: async (options) => {
-    //     return this.proxy.$createContributedProfileTerminal(id, options);
-    //   },
-    // }));
+    this._profileProviders.set(id, this.profileSerivce.registerTerminalProfileProvider(extensionIdentifier, id, {
+      createContributedTerminalProfile: async (options) => {
+        return this.proxy.$createContributedProfileTerminal(id, options);
+      },
+    }));
   }
 
   public $unregisterProfileProvider(id: string): void {
     this._profileProviders.get(id)?.dispose();
     this._profileProviders.delete(id);
   }
+
+  private async _updateDefaultProfile() {
+		// const remoteAuthority = withNullAsUndefined(this._extHostContext.remoteAuthority);
+		// const defaultProfile = this._terminalProfileResolverService.getDefaultProfile({ remoteAuthority, os: this._os });
+		// const defaultAutomationProfile = this._terminalProfileResolverService.getDefaultProfile({ remoteAuthority, os: this._os, allowAutomationShell: true });
+		// this.proxy.$acceptDefaultProfile(...await Promise.all([defaultProfile, defaultAutomationProfile]));
+	}
 
   $setEnvironmentVariableCollection(
     extensionIdentifier: string,

@@ -1,11 +1,11 @@
 import { observable } from 'mobx';
 import { Injectable, Autowired, INJECTOR_TOKEN, Injector } from '@opensumi/di';
-import { WithEventBus, Emitter, Deferred, Event, IDisposable, DisposableStore } from '@opensumi/ide-core-common';
+import { WithEventBus, Emitter, Deferred, Event, IDisposable, DisposableStore, Disposable } from '@opensumi/ide-core-common';
 import { IMainLayoutService } from '@opensumi/ide-main-layout';
 import { TabBarHandler } from '@opensumi/ide-main-layout/lib/browser/tabbar-handler';
 import { IThemeService } from '@opensumi/ide-theme';
 import { WorkbenchEditorService } from '@opensumi/ide-editor';
-import { ITerminalController, ITerminalClient, ITerminalClientFactory, IWidget, ITerminalInfo, ITerminalBrowserHistory, ITerminalTheme, ITerminalGroupViewService, TerminalOptions, ITerminalErrorService, ITerminalInternalService, TerminalContainerId, ITerminalLaunchError, ITerminalProcessExtHostProxy, IStartExtensionTerminalRequest, ITerminalExitEvent, ITerminalExternalLinkProvider } from '../common';
+import { ITerminalController, ITerminalClient, ITerminalClientFactory, IWidget, ITerminalInfo, ITerminalBrowserHistory, ITerminalTheme, ITerminalGroupViewService, TerminalOptions, ITerminalErrorService, ITerminalInternalService, TerminalContainerId, ITerminalLaunchError, ITerminalProcessExtHostProxy, IStartExtensionTerminalRequest, ITerminalExitEvent, ITerminalExternalLinkProvider, ITerminalProfileProvider } from '../common';
 import { TerminalGroupViewService } from './terminal.view';
 import { TerminalContextKey } from './terminal.context-key';
 import { ResizeEvent, getSlotLocation, AppConfig } from '@opensumi/ide-core-browser';
